@@ -122,3 +122,236 @@ systemctl start wazuh-dashboard
 /usr/share/wazuh-dashboard/data/wazuh/config/wazuh.yml metre ip dans url
 /usr/share/wazuh-indexer/plugins/opensearch-security/tools/wazuh-passwords-tool.sh --api --change-all --admin-user wazuh --admin-password wazuh
 ```
+
+
+
+#clien 
+Création des VMs 
+(Créé 3 VM, changer le hostname et ip)
+
+Sur les VM : sudo apt update && sudo apt upgrade -y
+
+
+Sur CHAQUE VM
+
+
+
+# --- Création utilisateur + groupe ---
+```bash
+sudo adduser edan
+sudo groupadd direction
+sudo usermod -aG direction edan
+```
+# --- Arborescence des dossiers ---
+```bash
+sudo mkdir -p /docs/public
+sudo mkdir -p /docs/interne
+sudo mkdir -p /docs/confidentiel
+sudo mkdir -p /docs/secret
+```
+# --- Fichiers exemples ---
+```bash
+sudo touch /docs/public/rapport_annuel.pdf
+sudo touch /docs/interne/guide_employe.docx
+sudo touch /docs/confidentiel/base_clients.xlsx
+sudo touch /docs/secret/plan_fusion.docx
+```
+# --- Permissions ---
+```bash
+# Direction accès total sur "secret"
+sudo chown edan:direction /docs/secret
+sudo chmod 770 /docs/secret
+
+# Direction lecture/écriture sur "confidentiel"
+sudo chown edan:direction /docs/confidentiel
+sudo chmod 770 /docs/confidentiel
+
+# Lecture/écriture partagée sur "interne"
+sudo chown edan:direction /docs/interne
+sudo chmod 775 /docs/interne
+
+# Tout le monde lecture sur "public"
+sudo chown edan:direction /docs/public
+sudo chmod 755 /docs/public
+```
+# --- Installation Wazuh Agent ---
+```bash
+sudo apt-get install gnupg apt-transport-https
+
+curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH \
+| sudo gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import
+
+sudo chmod 644 /usr/share/keyrings/wazuh.gpg
+
+echo "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main" \
+| sudo tee -a /etc/apt/sources.list.d/wazuh.list
+
+sudo apt-get update
+sudo apt-get install wazuh-agent
+```
+# --- Configuration agent Wazuh ---
+```bash
+sudo nano /var/ossec/etc/ossec.conf
+
+# INSÉRER :
+# <client>
+#   <server>
+#     <address>IP_DU_SERVEUR_WAZUH</address>
+#     <protocol>tcp</protocol>
+#     <port>1514</port>
+#   </server>
+# </client>
+```
+# --- Activer et démarrer l’agent ---
+```bash
+sudo systemctl enable wazuh-agent
+sudo systemctl start wazuh-agent
+sudo systemctl status wazuh-agent
+```
+
+
+
+
+
+
+
+
+# --- Création utilisateur + groupe ---
+```bash
+sudo adduser rh1
+sudo groupadd rh
+sudo usermod -aG rh rh1
+```
+# --- Arborescence des dossiers ---
+```bash
+sudo mkdir -p /docs/public
+sudo mkdir -p /docs/interne
+sudo mkdir -p /docs/confidentiel
+sudo mkdir -p /docs/secret
+```
+# --- Fichiers exemples ---
+```bash
+sudo touch /docs/interne/politique_conges.docx
+sudo touch /docs/confidentiel/dossier_employes.xlsx
+```
+# --- Permissions ---
+```bash
+# RH : Accès lecture/écriture sur "confidentiel"
+sudo chown rh1:rh /docs/confidentiel
+sudo chmod 770 /docs/confidentiel
+
+# RH : Accès lecture/écriture sur "interne"
+sudo chown rh1:rh /docs/interne
+sudo chmod 775 /docs/interne
+
+# Public : lecture pour tous
+sudo chmod 755 /docs/public
+
+# Aucune permission sur "secret" (la direction contrôle)
+sudo chmod 700 /docs/secret
+```
+# --- Installation Wazuh Agent ---
+```bash
+sudo apt-get install gnupg apt-transport-https
+
+curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH \
+| sudo gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import
+
+sudo chmod 644 /usr/share/keyrings/wazuh.gpg
+
+echo "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main" \
+| sudo tee -a /etc/apt/sources.list.d/wazuh.list
+
+sudo apt-get update
+sudo apt-get install wazuh-agent
+```
+# --- Configuration agent ---
+```bash
+sudo nano /var/ossec/etc/ossec.conf
+
+# INSÉRER :
+# <client>
+#   <server>
+#     <address>IP_DU_SERVEUR_WAZUH</address>
+#     <protocol>tcp</protocol>
+#     <port>1514</port>
+#   </server>
+# </client>
+
+sudo systemctl enable wazuh-agent
+sudo systemctl start wazuh-agent
+sudo systemctl status wazuh-agent
+```
+# --- Création utilisateur + groupe ---
+```bash
+sudo adduser dev1
+sudo groupadd dev
+sudo usermod -aG dev dev1
+```
+# --- Arborescence des dossiers ---
+```bash
+sudo mkdir -p /docs/public
+sudo mkdir -p /docs/interne
+sudo mkdir -p /docs/confidentiel
+sudo mkdir -p /docs/secret
+sudo mkdir -p /docs/devtools
+```
+# --- Fichiers exemples ---
+```bash
+sudo touch /docs/interne/guide_technique.md
+sudo touch /docs/devtools/api_keys.txt
+```
+# --- Permissions ---
+```bash
+# DEV : Lecture/écriture sur "interne"
+sudo chown dev1:dev /docs/interne
+sudo chmod 775 /docs/interne
+
+# DEV : Lecture/écriture uniquement dans leur espace "devtools"
+sudo chown dev1:dev /docs/devtools
+sudo chmod 770 /docs/devtools
+
+# DEV : Pas d’accès à confidentiel
+sudo chmod 700 /docs/confidentiel
+
+# DEV : Pas d’accès à secret
+sudo chmod 700 /docs/secret
+
+# Public : lecture pour tous
+sudo chmod 755 /docs/public
+```
+# --- Installation Wazuh Agent ---
+```bash
+sudo apt-get install gnupg apt-transport-https
+
+curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH \
+| sudo gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import
+
+sudo chmod 644 /usr/share/keyrings/wazuh.gpg
+
+echo "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main" \
+| sudo tee -a /etc/apt/sources.list.d/wazuh.list
+
+sudo apt-get update
+sudo apt-get install wazuh-agent
+```
+# --- Configuration agent ---
+```bash
+sudo nano /var/ossec/etc/ossec.conf
+
+# INSÉRER :
+# <client>
+#   <server>
+#     <address>IP_DU_SERVEUR_WAZUH</address>
+#     <protocol>tcp</protocol>
+#     <port>1514</port>
+#   </server>
+# </client>
+
+sudo systemctl enable wazuh-agent
+sudo systemctl start wazuh-agent
+sudo systemctl status wazuh-agent
+```
+
+
+
