@@ -354,4 +354,120 @@ sudo systemctl status wazuh-agent
 ```
 
 
+# Problèmes rencontrés (difficultés imprévu): 
+
+## Imprévus (Emeric)
+Pas assez de RAM sur le premier VPS 
+
+Problèmes: Impossible d’installer Wazuh sur ce VPS
+
+Solution: Obligé de changer de VPS pour l’installation de Wazuh 
+Rendu du compte que Wazuh demandait 50GB disk dur et le VPS n’était pas assez fort. Donc switch sur une VM
+
+
+
+## Problème: Mes VM (ludovic) font des erreurs lorsque j’essai d’installer wazuh-agents 
+
+Problèmes: Le sudo apt-get update et la commande d’installation font une erreur bizarre qui empêche d’installer
+
+Solution: Commande sur le reddit => Rien changer
+Solution2: recommencer la VM => Rien changer
+Solution 3: demander à Thibault de les faire => Ça a marché :)
+
+
+https://askubuntu.com/questions/298177/a-failed-to-fetch-error-occurs-when-apt-get-update-is-run-how-do-i-fix-this
+
+
+résolution => Donc selon des sources externes, le premier essai pour installer Wazuh sur ma VM a été la corruption des sources APT du  dépôt Wazuh (clés GPG expirées ou repository mal reconnue). Cela faisait que même en recommençant l’installation Waouh plantait
+
+
+
+
+## Imprévu Installation Wazuh sur VM (ludovic & Thibault)
+
+Imprévus: Les commandes d’installation de wazuh-indexer, manager, dashboard 
+gelait systématiquement à 20% de l’installation.
+
+Problème: empêche l’installation de Wazuh
+
+Solution 1: Nettoyer complètement les paquets Wazuh et refait une installation propre
+Solution 2: Augmentation de CPU 1 => 2
+
+Solution 3 : ChatGPT dit de tester ca
+Si une installation est gelée, dpkg reste souvent locké.
+```bash
+sudo lsof /var/lib/dpkg/lock
+sudo lsof /var/lib/apt/lists/lock
+sudo lsof /var/cache/apt/archives/lock
+```
+Si quelque chose apparaît → tue-le :
+```bash
+sudo kill -9 PID
+```
+Puis :
+```bash
+sudo rm /var/lib/dpkg/lock
+sudo rm /var/lib/apt/lists/lock
+sudo rm /var/cache/apt/archives/lock
+sudo dpkg --configure -a
+sudo apt --fix-broken install -y
+```
+Ca a rien changé pantoute
+
+Finalement Emeric a réussi a créé une VM avant donc j’ai abandonné..
+
+
+
+
+
+
+Imprévu: Manque de RAM pour lancer les 3 VMs d’environnement + VM Wazuh (Emeric)
+
+Recommandé 8 coeurs 16 RAM pour chaque service PS: IL EN A 4!!
+
+Jamais pensé que ca pourrait être autant lourd donc on est fourré.
+
+
+Solutions: Augmenter la RAM de la machine hôte
+(> 16 Go recommandé si tu veux 3 VMs + Wazuh)
+Réduire la RAM des VMs non essentielles
+Ex : passer chaque VM à 1.5–2 Go.
+
+Solution 2: Parce que la RAM autorisé par défaut par Wazuh est de 1G, mais il faut plus. 
+PS: C’est cave de mettre par défaut de la RAM alors que tu c'est que ton logiciel à besoin de plus, - 3h de travail pour rien…
+https://chatgpt.com/c/693c1c5e-0844-8333-933c-476f7757aa64
+
+
+
+PROBLEME: Wazuh demande certificat (IP publique/privé) (Emeric & Ludovic)
+
+
+Le script demande une IP privée, mais les ip du vps son public 
+
+
+Et Wazuh refuse de démarrer parce que le certificat ne correspond pas
+
+Solution : Générer de NOUVEAUX certificats avec TOUTES tes IP + ton hostname
+
+MAIS, impossible de générer les nouveaux certificats, car pas assez de disque dur comme sur le problème d’avant (boucle infini)
+
+
+https://chatgpt.com/c/693c179d-80f8-8328-8df0-5f7b72af08b2
+
+https://documentation.wazuh.com/current/user-manual/wazuh-server-cluster/adding-new-server-nodes/certificates-creation.html
+
+
+
+
+Problème: Il faut un nom de domaine liés à l’ip et vu que c'est une VM ca marche pas (Pour pouvoir utiliser le dashboard) (Thibault)
+
+
+Solution:  Il n'y en a pas. Impossible de mettre un nom de domaine avec une IP sur une VM.
+
+
+
+
+
+
+
 
