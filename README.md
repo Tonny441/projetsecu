@@ -42,7 +42,7 @@ sudo ufw reload
 ```
 ## methode 2
 https://documentation.wazuh.com/current/installation-guide/index.html
-##indexer
+## indexer
 https://documentation.wazuh.com/current/installation-guide/wazuh-indexer/step-by-step.html
 ```bash
 curl -sO https://packages.wazuh.com/4.14/wazuh-certs-tool.sh
@@ -76,7 +76,7 @@ curl -k -u admin https://<WAZUH_INDEXER_IP_ADDRESS>:9200
 
 
 ```
-##manager
+## manager
 https://documentation.wazuh.com/current/installation-guide/wazuh-server/step-by-step.html
 ```bash
 apt-get install gnupg apt-transport-https
@@ -112,7 +112,7 @@ systemctl daemon-reload
 systemctl enable filebeat
 systemctl start filebeat
 ```
-##dashboard
+## dashboard
 https://documentation.wazuh.com/current/installation-guide/wazuh-dashboard/step-by-step.html
 ```bash
 apt-get install debhelper tar curl libcap2-bin 
@@ -139,7 +139,7 @@ systemctl start wazuh-dashboard
 
 
 
-#clien 
+# clien 
 Création des VMs 
 (Créé 3 VM, changer le hostname et ip)
 
