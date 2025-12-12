@@ -1,4 +1,18 @@
 # projetsecu
+#Procédure de déploiement
+
+
+IP ServeurDirection => 192.168.56.3
+IP ServeurDeveloppeur => 192.168.56.4
+IP ServeurRessourceHumaine => 192.168.56.5
+
+
+Vm Développeur  : accès aux projets, code source, documentation technique, parfois aux données clients (selon le projet). 
+
+Ressources humaines : accès aux dossiers du personnel, bulletins de salaire, contrats, données confidentielles. 
+
+
+ Direction & Managers : accès global aux documents stratégiques, financiers, RH et client. 
 
 # installation sur vps
 ## methode 1
